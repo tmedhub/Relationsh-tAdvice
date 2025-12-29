@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Interactive Game Page</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    cursor: url("cursor.png") 16 16, auto !important;
+    font-family: "Courier New", monospace;
+}
+
+body {
+    background: black;
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* ================= TOP TEXT ================= */
+#text {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    text-align: center;
+    font-size: 24px;
+    white-space: pre-line;
+}
+
+/* ================= MAIN STAGE ================= */
+.stage {
+    position: absolute;
+    bottom: 20px;
+    left: 48%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+/* ================= RAUNAQ ================= */
+#raunaq {
+    width: 460px;
+    z-index: 3;
+}
+
+/* ================= LEFT GAME BOX ================= */
+#game-box {
+    width: 320px;
+    background: #222;
+    border: 2px solid #ff69b4;
+    border-radius: 12px;
+    padding: 16px;
+    opacity: 0;
+    transform: translateX(40px);
+    transition: 0.6s ease;
+    font-size: 14px;
+}
+
+#game-box img {
+    width: 100%;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+/* ================= RIGHT SEGMENTS BOX ================= */
+#segments-box {
+    width: 320px;
+    background: #222;
+    border: 2px solid #ff69b4;
+    border-radius: 12px;
+    padding: 16px;
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: 0.6s ease;
+}
+
+/* ================= SHOW ON HOVER ================= */
+.stage:hover #game-box,
+.stage:hover #segments-box {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ================= NAV BUTTONS ================= */
+.nav-button {
+    background: #ff69b4;
+    border: none;
+    padding: 6px 12px;
+    margin: 6px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* ================= FLOATING HEARTS ================= */
+.heart {
+    position: absolute;
+    bottom: -50px;
+    font-size: 28px;
+    animation: floatUp linear forwards;
+    pointer-events: none;
+}
+
+@keyframes floatUp {
+    from { transform: translateY(0); opacity: 1; }
+    to { transform: translateY(-110vh); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- TYPEWRITER TEXT -->
+<div id="text"></div>
+
+<!-- MAIN STAGE -->
+<div class="stage">
+
+    <!-- LEFT: GAME -->
+    <div id="game-box">
+        <h3>RELATIONSH!T CARDS — MERCH</h3>
+        <img src="game.png">
+
+        <p>Goal: be the first player with no cards.On your turn, play 1 card or draw 1.Match emotion or logic with Phrase cards.
+        Wilds: Gaslight(change), Silent Treatment (+2), Block (skip), Breakup (end).Yell “OBAMA!” on last card or draw 2.
+        (I can build the show to literally any game you can think of).</p>
+    </div>
+
+    <!-- CENTER: RAUNAQ -->
+    <img src="raunaq.png" id="raunaq">
+
+    <!-- RIGHT: SEGMENTS -->
+    <div id="segments-box">
+        <h3>Segment Ideas</h3>
+        <h4 id="segment-subtitle"></h4>
+        <p id="segment-content"></p>
+
+        <div style="text-align:center;">
+            <button class="nav-button" onclick="prevSegment()">← Prev</button>
+            <button class="nav-button" onclick="nextSegment()">Next →</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+/* ========== TYPEWRITER ========== */
+const introText =
+`Hello there...
+I am Thanima, You are Michelle Obama and here are few ideas`;
+
+let i = 0;
+function typeWriter() {
+    if (i < introText.length) {
+        document.getElementById("text").innerHTML += introText.charAt(i);
+        i++;
+        setTimeout(typeWriter, 45);
+    }
+}
+typeWriter();
+
+/* ========== SEGMENTS DATA ========== */
+const segments = [
+{
+title: "1. Whose side are you on?",
+content:
+`4 guests get random halves of stories.
+
+Card A (27M): "I held back my loud reactions..."
+Card B (26M): "My ex just proposed..."
+Card C (28F): "My in-law & partner are cooking..."
+Card D (30F): "Every glance made me nervous..."
+
+A+C and B+D form stories.`
+},
+{
+title: "2. Guess what!?",
+content:
+`Stories with **** words.
+
+Example:
+"Yesterday my partner texted me
+'I love your ****'"`
+},
+{
+title: "3. Talaq or not to talaq",
+content:
+`Courtroom-style debate.
+
+Situation:
+"I watched a show we started together alone."`
+},
+{
+title: "4. ITS JUST A NUMBER!",
+content:
+`Funny fake stats.
+
+73.2% hide snacks.
+3.7 lies per outfit.`
+}
+];
+
+let current = 0;
+function showSegment() {
+    document.getElementById("segment-subtitle").innerText = segments[current].title;
+    document.getElementById("segment-content").innerText = segments[current].content;
+}
+function nextSegment(){ current=(current+1)%segments.length; showSegment(); }
+function prevSegment(){ current=(current-1+segments.length)%segments.length; showSegment(); }
+showSegment();
+
+/* ========== HEARTS ========== */
+const hearts = ["💖","💗","💘","💝","💞"];
+setInterval(() => {
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.innerText = hearts[Math.floor(Math.random()*hearts.length)];
+    h.style.left = Math.random()*100 + "vw";
+    h.style.animationDuration = (4+Math.random()*4)+"s";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),8000);
+}, 300);
+</script>
+
+</body>
+</html>
